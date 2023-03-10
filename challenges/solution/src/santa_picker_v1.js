@@ -1,8 +1,8 @@
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('secret_santa.db', (err) => {if(err) console.log(err.message);});
+const db = new sqlite3.Database('../db/secret_santa.db', (err) => {if(err) console.log(err.message);});
 
-export function createSecretSanta(rows){
+function createSecretSanta(rows){
     var randomIntMax = rows.length;
 
     var gifters = [];

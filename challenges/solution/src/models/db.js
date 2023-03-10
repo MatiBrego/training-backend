@@ -19,5 +19,3 @@ db.run(sql, (err) => {if(err) console.log(err.message)});
 //Create Secret Santa table
 sql = 'CREATE TABLE secret_santas(id INTEGER PRIMARY KEY, gifter_id INTEGER REFERENCES group_people (id), giftee_id INTEGER REFERENCES group_people (id), year INTEGER)';
 db.run(sql, (err) => {if(err) console.log(err.message)});
-
-

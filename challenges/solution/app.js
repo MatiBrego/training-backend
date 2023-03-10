@@ -1,6 +1,8 @@
 const express = require('express');
 const parser = require('body-parser');
-const sqlite3 = require('sqlite3')
+const sqlite3 = require('sqlite3');
+import { createSecretSanta } from './santa_picker_v1';
+
 const app = express();
 
 app.use(parser.json())
@@ -78,10 +80,30 @@ app.get('/api/group/add', (req, res, next) =>{
 
 app.post('/api/secret_santa/', (req, res, next) =>{
 
-    var sql = "SELECT name, person_id, group_id FROM people JOIN group_people ON person_id = people.id where group_id = ?"
+    var sql = "SELECT name, people.id, group_id FROM people JOIN group_people ON person_id = people.id where group_id = ?"
 
     db.all(sql, [req.body.group_id], (err, rows) => {
+
+        if (err) console.log(err)
+
+        result = createSecretSanta(rows);
+
+        res.json(result);
+
+    })
+})
+
+app.get('/api/secret_santa/', (req, res, next) =>{
+
+    var sql = "SELECT gifter_id, P1.name AS name_gifter, giftee_id, P2.name AS name_giftee, year FROM secret_santas " +
+    "JOIN people AS P1 ON gifter_id = P1.id "+
+    "JOIN people AS P2 ON giftee_id = P2.id";
+
+    db.all(sql, [], (err, rows) => {
+        if(err) console.log(err);
+
         res.json(rows);
+
     })
 })
 

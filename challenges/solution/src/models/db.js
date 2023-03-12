@@ -1,8 +1,8 @@
 const sqlite3 = require('sqlite3');
 
-//Conect to the db
+//Connect to the db
 const db = new sqlite3.Database('secret_santa.db', (err) => {if(err) console.log(err.message)});
-var sql;
+let sql;
 
 //Create groups table
 sql = 'CREATE TABLE groups(id INTEGER PRIMARY KEY, name VARCHAR(255))';

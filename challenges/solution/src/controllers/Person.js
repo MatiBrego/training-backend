@@ -5,11 +5,12 @@ export function addPerson(req, res){
     const name = req.body.name;
 
     QueryInsertPerson(name);
+    res.send("Person created");
 }
 
 export function getAllPeople(req, res){
 
-    const people = QueryAllPeople((err, people) => {
+    QueryAllPeople((err, people) => {
         if(err) console.log(err);
         res.json(people);
     });

@@ -1,8 +1,9 @@
-import { createSecretSantaV1, QuerySecretSantaByGroup } from "../services/SecretSantaTable.js";
+import { QuerySecretSantaByGroup } from "../services/SecretSantaTable.js";
+import {createSecretSanta} from "../services/CreateSecretSantaV1.js";
 
 
 export function generateSecretSanta(req, res){
-    createSecretSantaV1(req.params.group_id, (err, result) => {
+    createSecretSanta(req.params.group_id, (err, result) => {
         if(err) console.log(err);
 
         res.json(result);

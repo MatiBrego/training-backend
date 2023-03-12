@@ -3,7 +3,8 @@ import { QueryAllGroups, QueryInsertGroup } from "../services/GroupsTable.js";
 export function addGroup(req, res){
     const group_name = req.body.name;
     
-    QueryInsertGroup();
+    QueryInsertGroup(group_name);
+    res.send("Group created");
 }
 
 export function getAllGroups(req, res){

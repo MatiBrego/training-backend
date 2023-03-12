@@ -3,6 +3,8 @@ import { QueryAllGroupPeople, QueryInsertGroupPerson } from "../services/GroupPe
 export function addPersonToGroup(req, res){
 
     QueryInsertGroupPerson(req.params.person_id, req.params.group_id);
+
+    res.send("Person added to group");
 }
 
 export function getAllGroupPeople(req, res){

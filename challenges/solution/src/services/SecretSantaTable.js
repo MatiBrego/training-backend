@@ -9,16 +9,22 @@ export function QuerySecretSantaByGroup(group_id, callback){
     "JOIN people AS P2 ON giftee_id = P2.id " +
     "JOIN group_people As GP1 ON gifter_id = GP1.person_id "+
     "JOIN group_people As GP2 ON giftee_id = GP2.person_id "+
-    "WHERE GP1.group_id = ? AND GP2.group_id = ?"+
-    "ORDER BY year";
+    "WHERE GP1.group_id = ? AND GP2.group_id = ? "+
+        "GROUP BY yer " +
+        "ORDER BY year";
 
     db.all(sql, [group_id, group_id], (err, rows) => {
         if(err) console.log(err);
 
+
         let result = getJsonByYear(rows);
+
+
 
         callback(err, result)
     });
+
+
 
     function getJsonByYear(rows){
         let currentYear = rows[0].year;

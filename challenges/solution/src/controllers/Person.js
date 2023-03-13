@@ -1,4 +1,4 @@
-import { QueryAllPeople, QueryInsertPerson, QueryPersonById } from "../services/PeopleTable.js";
+import {QueryAllPeople, QueryInsertPerson, QueryPersonById, QueryUpdatePersonTag} from "../services/PeopleTable.js";
 
 
 export function addPerson(req, res){
@@ -24,4 +24,13 @@ export function getPersonById(req, res){
         res.json(people); 
     });
 }
+
+export function addTag(req, res){
+    const person_id = req.body.person_id;
+    const newTag = req.body.tag;
+
+    QueryUpdatePersonTag(person_id, newTag);
+    res.send("Tag updated");
+}
+
 

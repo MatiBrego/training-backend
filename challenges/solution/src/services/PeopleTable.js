@@ -20,3 +20,9 @@ export function QueryPersonById(id, callback){
 
     db.all(sql, [id], callback)
 }
+
+export function QueryUpdatePersonTag(person_id, newTag){
+    const sql = 'UPDATE people SET tag = ? WHERE id = ?';
+
+    db.run(sql, [newTag, person_id], (err) => {if(err) console.log(err)});
+}

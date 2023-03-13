@@ -62,26 +62,24 @@ async function selectPair(gifters, giftees, tags, rows){
 
     let tag_keys = tags.keys()
 
-    // for (let i = 0; i < tag_keys.length; i++){
-    //     console.log("tag_keys.next()");
-    //     let tag_key = tag_keys.next();
-    //     if (tag_key === gifter.tag) continue;
-    //
-    //     let tag_row = tags[tag_key].length
-    //
-    //     for (let j = 0; j < tag_row; j++) {
-    //         let giftee = tag_row[0];
-    //
-    //         if (giftee.id === gifter.id ||
-    //             giftees.includes(giftee) ||
-    //             gifters.includes(gifter) ||
-    //             await checkPreviousSecretSantas(gifter, giftee)){
-    //
-    //             return {gifter: gifter, giftee: giftee};
-    //         }
-    //     }
-    // }
-    console.log(tags)
+    for (let i = 0; i < tag_keys.length; i++){
+        let tag_key = tag_keys.next();
+        if (tag_key === gifter.tag) continue;
+
+        let tag_row = tags[tag_key].length
+
+        for (let j = 0; j < tag_row; j++) {
+            let giftee = tag_row[0];
+
+            if (giftee.id === gifter.id ||
+                giftees.includes(giftee) ||
+                gifters.includes(gifter) ||
+                await checkPreviousSecretSantas(gifter, giftee)){
+
+                return {gifter: gifter, giftee: giftee};
+            }
+        }
+    }
 
     let giftee = tags.get(gifter.tag)[getRandomInt(randomIntMax)];
 

@@ -10,40 +10,17 @@ export function QuerySecretSantaByGroup(group_id, callback){
     "JOIN group_people As GP1 ON gifter_id = GP1.person_id "+
     "JOIN group_people As GP2 ON giftee_id = GP2.person_id "+
     "WHERE GP1.group_id = ? AND GP2.group_id = ? "+
-        "GROUP BY yer " +
         "ORDER BY year";
 
     db.all(sql, [group_id, group_id], (err, rows) => {
         if(err) console.log(err);
 
-
-        let result = getJsonByYear(rows);
-
-
+        let result = rows.reduce(function (r, a) {
+            r[a.year] = r[a.year] || {};
+            r[a.year][a.gifter_name] = a.giftee_name;
+            return r;
+        })
 
         callback(err, result)
     });
-
-
-
-    function getJsonByYear(rows){
-        let currentYear = rows[0].year;
-        let result = {};
-        let santasByYear = {};
-
-        for (let i = 0; i < rows.length; i++) {
-            let row = rows[i];
-            if(row.year !== currentYear){
-                result[currentYear] = santasByYear;
-                santasByYear = {};
-                currentYear = row.year;
-            }
-            santasByYear[row.gifter_name] = row.giftee_name;
-        }
-        result[currentYear] = santasByYear;
-
-        return result;
-    }
-
-
 }

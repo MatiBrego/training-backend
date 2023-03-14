@@ -23,7 +23,7 @@ We defined an interface for the endpoints we will have in the server:
             "name": <name_of_group>
         }
         ```
-- `POST /api/group/add/:person_id` to add a person to a group
+- `POST /api/group/add/:person_id/:group_id` to add a person to a group
 - `POST /api/secret_santa/:group_id` to generate a random secret santa
     - the return body will be:
         ```

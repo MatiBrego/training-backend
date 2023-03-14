@@ -31,8 +31,10 @@ async function distributeSecretSantas(rows){
 
         const pair = await selectPair(gifters, giftees, tags, rows)
 
-        // const sql = "INSERT INTO secret_santas(gifter_id, giftee_id, year) VALUES (?, ?, ?)";
-        // db.run(sql, [gifter.id, giftee.id, new Date().getFullYear()], (err) => {if(err) return console.log(err)})
+        const sql = "INSERT INTO secret_santas(gifter_id, giftee_id, year) VALUES (?, ?, ?)";
+        db.run(sql, [gifter.id, giftee.id, new Date().getFullYear()], (err) => {
+            if(err) return console.log(err)
+        })
 
         gifters.push(pair.gifter);
         giftees.push(pair.giftee);
@@ -50,48 +52,6 @@ function fillTags(rows, tags){
         if(tags.has(rowTag)) tags.get(rowTag).push(rows[i])
         else tags.set(rowTag, [rows[i]])
     }
-}
-
-async function selectPair(gifters, giftees, tags, rows){
-    let randomIntMax = rows.length;
-
-    let gifter = rows[getRandomInt(randomIntMax)];
-    while(gifters.includes(gifter)){
-        gifter = rows[getRandomInt(randomIntMax)];
-    }
-
-    let tag_keys = tags.keys()
-
-    for (let i = 0; i < tag_keys.length; i++){
-        let tag_key = tag_keys.next();
-        if (tag_key === gifter.tag) continue;
-
-        let tag_row = tags[tag_key].length
-
-        for (let j = 0; j < tag_row; j++) {
-            let giftee = tag_row[0];
-
-            if (giftee.id === gifter.id ||
-                giftees.includes(giftee) ||
-                gifters.includes(gifter) ||
-                await checkPreviousSecretSantas(gifter, giftee)){
-
-                return {gifter: gifter, giftee: giftee};
-            }
-        }
-    }
-
-    let giftee = tags.get(gifter.tag)[getRandomInt(randomIntMax)];
-
-    while  (giftee.id === gifter.id ||
-            giftees.includes(giftee) ||
-            gifters.includes(gifter) ||
-            await checkPreviousSecretSantas(gifter, giftee)){
-        giftee = tags.get(gifter.tag)[getRandomInt(randomIntMax)];
-    }
-
-
-    return {gifter: gifter, giftee: giftee}
 }
 
 function getRandomInt(max){
@@ -122,4 +82,56 @@ function query(sql, params){
             else resolve({rows: rows});
         })
     })
+}
+
+async function selectPair(gifters, giftees, tags, rows){
+    let randomIntMax = rows.length;
+
+    let gifter = rows[getRandomInt(randomIntMax)];
+    while(gifters.includes(gifter)){
+        gifter = rows[getRandomInt(randomIntMax)];
+    }
+
+    let tagKeys = tags.keys()
+
+    let currentTag = tagKeys.next();
+
+    while(!currentTag.done){
+
+
+        let tagValue = currentTag.value;
+
+        if (tagValue === gifter.tag) {
+            currentTag = tagKeys.next();
+            continue;
+        }
+
+        let tagRows = tags.get(tagValue)
+
+        for (let j = 0; j < tagRows.length; j++) {
+            let giftee = tagRows[j];
+
+            if (!(giftee.id === gifter.id) &&
+                !giftees.includes(giftee) &&
+                !gifters.includes(gifter) &&
+                !await checkPreviousSecretSantas(gifter, giftee)){
+
+                return {gifter: gifter, giftee: giftee};
+            }
+        }
+
+        currentTag = tagKeys.next();
+    }
+
+    let giftee = tags.get(gifter.tag)[getRandomInt(randomIntMax)];
+
+    while  (giftee.id === gifter.id ||
+            giftees.includes(giftee) ||
+            gifters.includes(gifter) ||
+            await checkPreviousSecretSantas(gifter, giftee)){
+        giftee = tags.get(gifter.tag)[getRandomInt(randomIntMax)];
+    }
+
+
+    return {gifter: gifter, giftee: giftee}
 }

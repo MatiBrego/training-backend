@@ -15,12 +15,22 @@ export function QuerySecretSantaByGroup(group_id, callback){
     db.all(sql, [group_id, group_id], (err, rows) => {
         if(err) console.log(err);
 
+        let result = getSecretSantasByYear(rows);
+
+        callback(err, result)
+    });
+
+    function getSecretSantasByYear(rows){
         let result = rows.reduce(function (r, a) {
             r[a.year] = r[a.year] || {};
             r[a.year][a.gifter_name] = a.giftee_name;
             return r;
         })
 
-        callback(err, result)
-    });
+        delete result.gifter_name;
+        delete result.giftee_name;
+        delete result.year;
+
+        return result;
+    }
 }

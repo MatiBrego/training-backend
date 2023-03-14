@@ -7,16 +7,24 @@ In this example you'll find an already setted up express server with some existi
 - Install [Git](https://git-scm.com/), [Docker](https://www.docker.com/), [Node v18](https://nodejs.org/en/download/), [Yarn](https://yarnpkg.com/) and [Direnv](https://direnv.net/)
 - Clone this repository
 - Create a copy of [.envrc template](./.envrc.template) into `.envrc`
-- Verify that you hooked [direnv into your shell](https://direnv.net/docs/hook.html)
-- Run:
-  ```
-  direnv allow
-  ```
-- Run:
-  ```
-  docker compose up
-  ```
-- You're ready to go!
+#### With direnv
+  - Verify that you hooked [direnv into your shell](https://direnv.net/docs/hook.html)
+  - Run:
+    ```
+    direnv allow
+    ```
+  - Run:
+    ```
+    docker compose up
+    ```
+#### Without direnv
+  - Create a copy of [.envrc template](./.envrc.template) into `.env`
+  - Run:
+    ```
+    docker compose --env-file .env up
+    ``` 
+
+You're **ready to go**!
 
 ## Useful tools
 

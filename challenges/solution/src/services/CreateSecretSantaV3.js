@@ -32,7 +32,7 @@ async function distributeSecretSantas(rows){
         const pair = await selectPair(gifters, giftees, tags, rows)
 
         const sql = "INSERT INTO secret_santas(gifter_id, giftee_id, year) VALUES (?, ?, ?)";
-        db.run(sql, [gifter.id, giftee.id, new Date().getFullYear()], (err) => {
+        db.run(sql, [pair.gifter.id, pair.giftee.id, new Date().getFullYear()], (err) => {
             if(err) return console.log(err)
         })
 

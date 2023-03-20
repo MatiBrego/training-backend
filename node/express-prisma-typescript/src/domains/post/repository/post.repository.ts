@@ -9,5 +9,5 @@ export interface PostRepository {
   getById(postId: string): Promise<PostDTO | null>;
   getByIdPublicOrFollowed(userId:string, postId: string): Promise<PostDTO | null>;
   getByAuthorId(authorId: string): Promise<PostDTO[]>;
-  getByAuthorIdPublicOrFollowed(userId: string, authorId: string): Promise<PostDTO[]>;
+  getByAuthorIdPublicOrFollowed(userId: string, authorId: string, options: CursorPagination): Promise<PostDTO[]>;
 }

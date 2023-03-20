@@ -30,7 +30,7 @@ export class PostServiceImpl implements PostService {
     return this.repository.getAllByDatePaginatedPublicOrFollowed(userId, options);
   }
 
-  async getPostsByAuthor(userId: any, authorId: string): Promise<PostDTO[]> {
-    return this.repository.getByAuthorIdPublicOrFollowed(userId, authorId);
+  async getPostsByAuthor(userId: any, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
+    return this.repository.getByAuthorIdPublicOrFollowed(userId, authorId, options);
   }
 }

@@ -44,3 +44,20 @@ userRouter.delete('/', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK);
 });
+
+//Makes the logged user profile private
+userRouter.post("/private", async (req: Request, res: Response) => {
+  const { userId } = res.locals.context;
+
+  await service.makeUserPrivate(userId);
+
+  return res.status(HttpStatus.OK).send();
+});
+
+userRouter.post("/public", async (req: Request, res: Response) => {
+  const { userId } = res.locals.context;
+
+  await service.makeUserPublic(userId);
+
+  return res.status(HttpStatus.OK).send();
+});

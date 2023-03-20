@@ -15,7 +15,7 @@ followRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
 
     await service.FollowUser(userId, user_id);
 
-    return res.status(HttpStatus.OK);
+    return res.status(HttpStatus.OK).send();
 })
 
 followRouter.post('/unfollow/:user_id', async (req: Request, res: Response) => {

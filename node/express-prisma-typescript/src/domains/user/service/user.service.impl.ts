@@ -7,7 +7,7 @@ import { UserService } from './user.service';
 export class UserServiceImpl implements UserService {
   constructor(private readonly repository: UserRepository) {}
 
-  async getUser(userId: any): Promise<UserDTO> {
+  async getUser(userId: string): Promise<UserDTO> {
     const user = await this.repository.getById(userId);
     if (!user) throw new NotFoundException('user');
     return user;
@@ -20,5 +20,13 @@ export class UserServiceImpl implements UserService {
 
   deleteUser(userId: any): Promise<void> {
     return this.repository.delete(userId);
+  }
+
+  makeUserPrivate(userId: string): Promise<UserDTO> {
+    return this.repository.updatePrivacy(userId, true);
+  }
+
+  makeUserPublic(userId: string): Promise<UserDTO> {
+    return this.repository.updatePrivacy(userId, false);
   }
 }

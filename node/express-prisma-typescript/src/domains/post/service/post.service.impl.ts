@@ -21,19 +21,16 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost(userId: string, postId: string): Promise<PostDTO> {
-    // TODO: validate that the author has public profile or the user follows the author
-    const post = await this.repository.getById(postId);
+    const post = await this.repository.getByIdPublicOrFollowed(userId, postId);
     if (!post) throw new NotFoundException('post');
     return post;
   }
 
   getLatestPosts(userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    // TODO: filter post search to return posts from authors that the user follows
-    return this.repository.getAllByDatePaginated(options);
+    return this.repository.getAllByDatePaginatedPublicOrFollowed(userId, options);
   }
 
-  getPostsByAuthor(userId: any, authorId: string): Promise<PostDTO[]> {
-    // TODO: throw exception when the author has a private profile and the user doesn't follow them
-    return this.repository.getByAuthorId(authorId);
+  async getPostsByAuthor(userId: any, authorId: string): Promise<PostDTO[]> {
+    return this.repository.getByAuthorIdPublicOrFollowed(userId, authorId);
   }
 }

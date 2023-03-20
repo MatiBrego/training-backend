@@ -8,6 +8,15 @@ abstract class HttpException extends Error {
   }
 }
 
+export class PrivateAccessException extends HttpException{
+  constructor() {
+    super(
+        404,
+        "This user is private, you must follow them first"
+    );
+  }
+}
+
 export class UnauthorizedException extends HttpException {
   constructor(errorCode?: string) {
     super(

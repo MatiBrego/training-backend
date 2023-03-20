@@ -89,38 +89,7 @@ export class PostRepositoryImpl implements PostRepository {
     return post ? new PostDTO(post) : null;
   }
 
-  async getByIdPublicOrFollowed(userId:string, postId: string): Promise<PostDTO | null> {
-    const post = await this.db.post.findFirst({
-      where: {
-        id: postId,
-        author: {
-          OR: [
-            {
-              isPrivate: false,
-            }, {
-              followers: {
-                some: {
-                  followerId: userId
-                }
-              }
-            }
-          ]
-        }
-      },
-    });
-    return post ? new PostDTO(post) : null;
-  }
-
-  async getByAuthorId(authorId: string): Promise<PostDTO[]> {
-    const posts = await this.db.post.findMany({
-      where: {
-        authorId: authorId,
-      },
-    });
-    return posts.map(post => new PostDTO(post));
-  }
-
-  async getByAuthorIdPublicOrFollowed(userId: string, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
+  async getByAuthorId(authorId: string, options: CursorPagination): Promise<PostDTO[]> {
     const posts = await this.db.post.findMany({
       cursor: {
         id: options.after ? options.after : options.before ? options.before : undefined,
@@ -137,19 +106,6 @@ export class PostRepositoryImpl implements PostRepository {
       ],
       where: {
         authorId: authorId,
-        author: {
-          OR: [
-            {
-              isPrivate: false,
-            }, {
-              followers: {
-                some: {
-                  followerId: userId
-                }
-              }
-            }
-          ]
-        }
       },
     });
     return posts.map(post => new PostDTO(post));

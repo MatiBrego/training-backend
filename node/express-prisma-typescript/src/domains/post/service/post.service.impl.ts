@@ -2,11 +2,15 @@ import { CreatePostInputDTO, PostDTO } from '../dto';
 import { PostRepository } from '../repository';
 import { PostService } from '.';
 import { validate } from 'class-validator';
-import { ForbiddenException, NotFoundException } from '@utils';
+import {ForbiddenException, NotFoundException, PrivateAccessException} from '@utils';
 import { CursorPagination } from '@types';
+import {UserRepository} from "@domains/user/repository";
+import {FollowRepository} from "@domains/follow/repository/follow.repository";
 
 export class PostServiceImpl implements PostService {
-  constructor(private readonly repository: PostRepository) {}
+  constructor(private readonly repository: PostRepository,
+              private readonly userRepository: UserRepository,
+              private readonly followRepository: FollowRepository) {}
 
   createPost(userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     validate(data);
@@ -21,8 +25,16 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost(userId: string, postId: string): Promise<PostDTO> {
-    const post = await this.repository.getByIdPublicOrFollowed(userId, postId);
+    const post = await this.repository.getById(postId);
     if (!post) throw new NotFoundException('post');
+
+    const author = await this.userRepository.getById(post.authorId);
+    if(author?.isPrivate) {
+      const follow = await this.followRepository.getByUsersId(userId, author.id)
+      if (!follow) throw new PrivateAccessException();
+    }
+
+
     return post;
   }
 
@@ -31,6 +43,13 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPostsByAuthor(userId: any, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
-    return this.repository.getByAuthorIdPublicOrFollowed(userId, authorId, options);
+
+    const author = await this.userRepository.getById(authorId);
+    if(author?.isPrivate) {
+      const follow = await this.followRepository.getByUsersId(userId, author.id)
+      if (!follow) throw new PrivateAccessException();
+    }
+
+    return this.repository.getByAuthorId(authorId, options);
   }
 }

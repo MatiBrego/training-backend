@@ -33,6 +33,8 @@ model User {
   posts     Post[]
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
+  likes     Like[]   @relation(name: "likes")
+  retweets  Retweet[] @relation(name: "retweets")
 }
 
 model Follow {
@@ -61,4 +63,26 @@ model Post {
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  likes Like[] @relation(name: "likes")
+  retweets Retweet[] @relation(name: "retweets")
+}
+
+model Like{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+    likerId String @db.Uuid
+    postId  String @db.Uuid
+
+    liker User @relation(name: "likes", fields: [likerId], references: [id], onDelete: Cascade) //One to many
+    post Post @relation(name: "likes", fields: [postId], references: [id], onDelete: Cascade) //One to many
+}
+
+model Retweet{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+    retweeterId String @db.Uuid
+    postId  String @db.Uuid
+
+    retweeter User @relation(name: "retweets", fields: [retweeterId], references: [id], onDelete: Cascade) //One to many
+    post Post @relation(name: "retweets", fields: [postId], references: [id], onDelete: Cascade) //One to many
 }

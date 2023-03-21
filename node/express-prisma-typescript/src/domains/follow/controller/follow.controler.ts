@@ -8,6 +8,7 @@ export const followRouter = Router();
 
 const service: FollowService = new FollowServiceImpl(new FollowRepositoryImpl(db))
 
+
 followRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
     const { userId } = res.locals.context;
 
@@ -17,6 +18,7 @@ followRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
 
     return res.status(HttpStatus.OK).send();
 })
+
 
 followRouter.post('/unfollow/:user_id', async (req: Request, res: Response) => {
     const { userId } = res.locals.context; //Follower

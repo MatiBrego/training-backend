@@ -19,6 +19,31 @@ const service: PostService = new PostServiceImpl(
     new UserRepositoryImpl(db),
     new FollowRepositoryImpl(db));
 
+/**
+ * @swagger
+ * /api/post:
+ *   get:
+ *     summary: Returns posts in feed
+ *     description: Returns posts in feed, paginated
+ *     parameters:
+ *      - in: query
+ *        name: limit
+ *        required: true
+ *        schema:
+ *          type: integer
+ *        description: The amount of records to return
+ *      - in: query
+ *        name: before
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: The id of the record after the last returned record
+ *      - in: query
+ *        name: after
+ *        schema:
+ *          type: string
+ *        description: The id of the record before the first returned record
+ */
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
   const { limit, before, after } = req.query as Record<string, string>;
@@ -28,6 +53,23 @@ postRouter.get('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(posts);
 });
 
+/**
+ * @swagger
+ * /api/post/{postId}:
+ *   get:
+ *     summary: Returns a post by id
+ *     description: Returns a post by id
+ *     responses:
+ *      404:
+ *        description: Not Found
+ *     parameters:
+ *     - in: path
+ *       name: postId
+ *       required: true
+ *       schema:
+ *        type: integer
+ *
+ */
 postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
   const { postId } = req.params;
@@ -47,6 +89,29 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(posts);
 });
 
+/**
+ * @swagger
+ * /api/post:
+ *  post:
+ *    summary: Create a post.
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              content:
+ *                type: string
+ *                description: Content for post.
+ *                example: Hello World!
+ *                required: true
+ *              images:
+ *                type: string
+ *                description: Images to add
+ *                example: picture.jpg
+ *
+ */
 postRouter.post('/', BodyValidation(CreatePostInputDTO) ,async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
   const data = req.body;

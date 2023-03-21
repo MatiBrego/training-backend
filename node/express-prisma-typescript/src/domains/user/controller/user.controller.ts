@@ -21,6 +21,13 @@ userRouter.get('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(users);
 });
 
+/**
+ * @swagger
+ * /api/user/me:
+ *   get:
+ *     summary: Returns information about the logged user
+ *     description: Returns information about the logged user
+ */
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
 
@@ -29,6 +36,19 @@ userRouter.get('/me', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user);
 });
 
+/**
+ * @swagger
+ * /api/user/{userId}:
+ *   get:
+ *     summary: Returns information about a user by id
+ *     description: Returns information about a user by id
+ *     parameters:
+ *     - in: path
+ *       name: userId
+ *       required: true
+ *       schema:
+ *        type: integer
+ */
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params;
 
@@ -37,6 +57,13 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user);
 });
 
+/**
+ * @swagger
+ * /api/user/:
+ *   delete:
+ *     summary: Deletes logged user
+ *     description: Deletes logged user
+ */
 userRouter.delete('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
 
@@ -45,7 +72,6 @@ userRouter.delete('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK);
 });
 
-//Makes the logged user profile private
 userRouter.post("/private", async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
 

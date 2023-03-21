@@ -9,13 +9,13 @@ export class FollowServiceImpl implements FollowService{
     constructor(private readonly repository: FollowRepository) {
     }
 
-    FollowUser(followerId: string, followedId: string): Promise<FollowDto> {
-           return this.repository.create(followerId, followedId)
+    async FollowUser(followerId: string, followedId: string): Promise<FollowDto> {
+           return await this.repository.create(followerId, followedId)
     }
 
     async UnfollowUser(followerId: string, followedId: string): Promise<void> {
         const follow = await this.repository.getByUsersId(followerId, followedId);
-        if(!follow) throw NotFoundException;
+        if(!follow) throw new NotFoundException("Follower");
 
         return this.repository.delete(follow.id);
     }

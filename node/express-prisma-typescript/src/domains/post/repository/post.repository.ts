@@ -8,4 +8,5 @@ export interface PostRepository {
   delete(postId: string): Promise<void>;
   getById(postId: string): Promise<PostDTO | null>;
   getByAuthorId(authorId: string, options: CursorPagination): Promise<PostDTO[]>;
+  createComment(userId: string, postId: string, data: CreatePostInputDTO): Promise<PostDTO>;
 }

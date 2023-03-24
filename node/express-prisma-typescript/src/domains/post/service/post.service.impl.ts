@@ -34,7 +34,6 @@ export class PostServiceImpl implements PostService {
       if (!follow) throw new PrivateAccessException();
     }
 
-
     return post;
   }
 
@@ -43,8 +42,8 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPostsByAuthor(userId: any, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
-
     const author = await this.userRepository.getById(authorId);
+
     if(author?.isPrivate) {
       const follow = await this.followRepository.getByUsersId(userId, author.id)
       if (!follow) throw new PrivateAccessException();
@@ -52,4 +51,9 @@ export class PostServiceImpl implements PostService {
 
     return this.repository.getByAuthorId(authorId, options);
   }
+
+  async commentPost(userId: string, postId: string, body: CreatePostInputDTO): Promise<PostDTO>{
+    return await this.repository.createComment(userId, postId, body);
+  }
+
 }

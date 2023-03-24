@@ -11,7 +11,7 @@ abstract class HttpException extends Error {
 export class PrivateAccessException extends HttpException{
   constructor() {
     super(
-        404,
+        HttpStatus.NOT_FOUND,
         "This user is private, you must follow them first"
     );
   }

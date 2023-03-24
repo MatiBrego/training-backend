@@ -27,4 +27,17 @@ export class RetweetRepositoryImpl implements RetweetRepository{
         })
     }
 
+    async getRetweet(retweeterId: string, postId: string): Promise<RetweetDto | null> {
+        const retweet = await this.db.retweet.findFirst({
+            where:{
+                AND:{
+                    retweeterId: retweeterId,
+                    postId: postId
+                }
+            }
+        })
+
+        return retweet ? new RetweetDto(retweet): null;
+    }
+
 }

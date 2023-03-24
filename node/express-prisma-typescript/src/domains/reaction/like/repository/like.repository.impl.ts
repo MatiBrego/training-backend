@@ -27,4 +27,15 @@ export class LikeRepositoryImpl implements LikeRepository{
         })
     }
 
+    async getLike(likerId: string, postId: string): Promise<LikeDto | null>{
+        const like = await this.db.like.findFirst({
+            where: {
+                AND:{
+                    likerId: likerId,
+                    postId: postId
+                }
+            }
+        })
+        return like ? new LikeDto(like): null;
+    }
 }

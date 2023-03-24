@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-
 import { CursorPagination } from '@types';
-
 import { PostRepository } from '.';
 import { CreatePostInputDTO, PostDTO } from '../dto';
 
@@ -85,7 +83,30 @@ export class PostRepositoryImpl implements PostRepository {
       where: {
         id: postId,
       },
+      include: {
+        comments: {
+          take: 10,
+          orderBy: [
+              {
+                retweets: {_count: 'desc'},
+              },
+          ],
+          select: {
+            id: true,
+            authorId: true,
+            content: true,
+            images: true,
+            createdAt: true,
+            _count:{
+              select:{
+                retweets: true,
+              }
+            }
+          },
+        }
+      }
     });
+    console.log(post);
     return post ? new PostDTO(post) : null;
   }
 
@@ -109,5 +130,17 @@ export class PostRepositoryImpl implements PostRepository {
       },
     });
     return posts.map(post => new PostDTO(post));
+  }
+
+  async createComment(userId: string, postId: string, data: CreatePostInputDTO): Promise<PostDTO> {
+    const comment = await this.db.post.create({
+      data: {
+        authorId: userId,
+        parentPostId: postId,
+        ...data
+      }
+    })
+
+    return new PostDTO(comment);
   }
 }

@@ -129,3 +129,13 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK);
 });
+
+postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
+  const { userId } = res.locals.context;
+  const { postId } = req.params;
+  const data = req.body;
+
+  const comment = await service.commentPost(userId, postId, data)
+
+  return res.status(HttpStatus.OK).json(comment)
+})

@@ -57,14 +57,20 @@ model Post {
   authorId String   @db.Uuid // Foreign Key
   content  String   @db.VarChar(240) // Limit the content to 240 characters
   images   String[]
+  parentPostId String? @db.Uuid
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
   likes Like[] @relation(name: "likes")
   retweets Retweet[] @relation(name: "retweets")
+
+  comments Post[] @relation(name: "comments")
+  parentPost Post? @relation(name: "comments", fields: [parentPostId], references: [id], onDelete: Cascade) //One to many
+
 }
 
 model Like{

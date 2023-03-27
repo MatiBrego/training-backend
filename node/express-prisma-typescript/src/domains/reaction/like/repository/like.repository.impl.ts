@@ -38,4 +38,14 @@ export class LikeRepositoryImpl implements LikeRepository{
         })
         return like ? new LikeDto(like): null;
     }
+
+    async getLikesByUserId(userId: string){
+        const likes = await this.db.like.findMany({
+            where:{
+                likerId: userId
+            }
+        })
+
+        return likes.map(like => new LikeDto(like));
+    }
 }

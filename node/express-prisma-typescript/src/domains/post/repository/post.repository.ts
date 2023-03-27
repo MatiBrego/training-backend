@@ -9,4 +9,5 @@ export interface PostRepository {
   getById(postId: string): Promise<PostDTO | null>;
   getByAuthorId(authorId: string, options: CursorPagination): Promise<PostDTO[]>;
   createComment(userId: string, postId: string, data: CreatePostInputDTO): Promise<PostDTO>;
+  getCommentsByUserId(userId: string): Promise<PostDTO[]>;
 }

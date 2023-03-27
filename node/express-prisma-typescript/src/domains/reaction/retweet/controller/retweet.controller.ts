@@ -24,3 +24,11 @@ retweetRouter.delete('/:postId', async (req, res) => {
     await service.unretweetPost(userId, postId);
     res.status(HttpStatus.OK).send("Deleted");
 })
+
+retweetRouter.get('/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    const retweets = await service.getRetweetsByUser(userId);
+
+    res.status(HttpStatus.OK).json(retweets);
+})

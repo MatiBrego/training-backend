@@ -139,3 +139,10 @@ postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (r
 
   return res.status(HttpStatus.OK).json(comment)
 })
+
+postRouter.get('/comment/:userId', async (req, res) => {
+  const {userId} = req.params;
+
+  const comments = await service.getCommentsByUser(userId);
+  return res.status(HttpStatus.OK).json(comments)
+})

@@ -40,4 +40,13 @@ export class RetweetRepositoryImpl implements RetweetRepository{
         return retweet ? new RetweetDto(retweet): null;
     }
 
+    async getRetweetsByUserId(userId: string): Promise<RetweetDto[]>{
+        const retweets = await this.db.retweet.findMany({
+            where:{
+                retweeterId: userId
+            }
+        })
+
+        return retweets.map(retweet => new RetweetDto(retweet));
+    }
 }

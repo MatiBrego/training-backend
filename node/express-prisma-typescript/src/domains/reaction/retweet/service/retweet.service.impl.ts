@@ -17,4 +17,9 @@ export class RetweetServiceImpl implements RetweetService{
     async unretweetPost(retweeterId: string, postId: string): Promise<void> {
         return await this.repository.delete(retweeterId, postId);
     }
+
+    async getRetweetsByUser(userId: string): Promise<RetweetDto[]>{
+        return await this.repository.getRetweetsByUserId(userId);
+    }
+
 }

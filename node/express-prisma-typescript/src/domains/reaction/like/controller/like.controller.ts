@@ -25,3 +25,11 @@ likeRouter.delete('/:postId', async (req, res) => {
     await service.unlikePost(userId, postId);
     res.status(HttpStatus.OK).send("Deleted");
 })
+
+likeRouter.get('/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    const likes = await service.getLikesByUser(userId);
+
+    res.status(HttpStatus.OK).json(likes);
+})

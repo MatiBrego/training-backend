@@ -56,4 +56,7 @@ export class PostServiceImpl implements PostService {
     return await this.repository.createComment(userId, postId, body);
   }
 
+  async getCommentsByUser(userId: string){
+    return await this.repository.getCommentsByUserId(userId);
+  }
 }

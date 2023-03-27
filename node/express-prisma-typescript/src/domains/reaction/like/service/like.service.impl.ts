@@ -18,4 +18,7 @@ export class LikeServiceImpl implements LikeService{
         return await this.repository.delete(likerId, postId);
     }
 
+    async getLikesByUser(userId: string){
+        return await this.repository.getLikesByUserId(userId);
+    }
 }

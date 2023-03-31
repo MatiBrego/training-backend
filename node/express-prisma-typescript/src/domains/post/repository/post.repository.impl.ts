@@ -79,7 +79,7 @@ export class PostRepositoryImpl implements PostRepository {
   }
 
   async getById(postId: string): Promise<PostDTO | null> {
-    const post = await this.db.post.findUnique({
+    const post = await this.db.post.findFirst({
       where: {
         id: postId,
       },
@@ -89,6 +89,7 @@ export class PostRepositoryImpl implements PostRepository {
           orderBy: [
               {
                 retweets: {_count: 'desc'},
+                // likes: {_count: 'desc'}
               },
           ],
           select: {
@@ -100,13 +101,13 @@ export class PostRepositoryImpl implements PostRepository {
             _count:{
               select:{
                 retweets: true,
+                // likes: true
               }
             }
           },
         }
       }
     });
-    console.log(post);
     return post ? new PostDTO(post) : null;
   }
 

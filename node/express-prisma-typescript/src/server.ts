@@ -31,6 +31,7 @@ app.use(
   })
 );
 
+//Declare options for swagger documentation
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -59,6 +60,7 @@ app.use('/api', router);
 
 app.use(ErrorHandling);
 
+//Swagger set up
 const specs = swaggerJSDoc(options);
 app.use(
     "/api-docs",
@@ -66,6 +68,24 @@ app.use(
     swaggerUi.setup(specs)
 );
 
-app.listen(Constants.PORT, () => {
+
+//Socket.IO set up
+import * as http from "http";
+import { Server } from "socket.io";
+import {chatController} from "@domains/chat/controller";
+
+const server = http.createServer(app)
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
+
+//Socket.IO controller
+chatController(io)
+
+server.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`);
 });

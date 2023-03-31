@@ -7,7 +7,7 @@ export class LikeRepositoryImpl implements LikeRepository{
     }
 
     async create(likerId: string, postId: string): Promise<LikeDto> {
-        const like = await this.db.like.create({
+        const like = await this.db.lks.create({
             data: {
                 likerId: likerId,
                 postId: postId
@@ -17,7 +17,7 @@ export class LikeRepositoryImpl implements LikeRepository{
     }
 
     async delete(likerId: string, postId: string): Promise<void> {
-        await this.db.like.deleteMany({
+        await this.db.lks.deleteMany({
             where:{
                 AND:{
                     likerId: likerId,
@@ -28,7 +28,7 @@ export class LikeRepositoryImpl implements LikeRepository{
     }
 
     async getLike(likerId: string, postId: string): Promise<LikeDto | null>{
-        const like = await this.db.like.findFirst({
+        const like = await this.db.lks.findFirst({
             where: {
                 AND:{
                     likerId: likerId,
@@ -40,7 +40,7 @@ export class LikeRepositoryImpl implements LikeRepository{
     }
 
     async getLikesByUserId(userId: string){
-        const likes = await this.db.like.findMany({
+        const likes = await this.db.lks.findMany({
             where:{
                 likerId: userId
             }

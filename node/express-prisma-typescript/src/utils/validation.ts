@@ -18,3 +18,14 @@ export function BodyValidation<T>(target: ClassType<T>) {
         next();
     }
 }
+
+export async function SocketBodyValidation<T>(body: any, target: ClassType<T>){
+    body = plainToInstance(target, body);
+    const errors = await validate(body, {
+        whitelist: true,
+        forbidNonWhitelisted: true
+    });
+
+    if (errors.length > 0)
+        throw new ValidationException(errors.map(error => ({ ...error, target: undefined, value: undefined })));
+}

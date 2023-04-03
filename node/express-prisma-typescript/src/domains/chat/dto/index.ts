@@ -12,18 +12,10 @@ export class RoomJoinRequestDto{
 
     @IsString()
     @IsNotEmpty()
-    userId!: string;
-
-    @IsString()
-    @IsNotEmpty()
     receiverId!: string;
 }
 
 export class MessageRequestDto{
-
-    @IsString()
-    @IsNotEmpty()
-    userId!: string;
 
     @IsString()
     @IsNotEmpty()

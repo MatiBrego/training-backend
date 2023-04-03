@@ -64,6 +64,14 @@ export class ChatRepository{
         return await this.db.chatMessage.findMany({
             where: {
                 chatRoomId: roomId
+            },
+            select: {
+                message: true,
+                user: {
+                    select: {
+                        user: true
+                    }
+                }
             }
         })
     }

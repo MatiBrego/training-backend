@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { Constants } from '@utils';
 import { UnauthorizedException } from '@utils/errors';
+import {Socket} from "socket.io";
 
 export const generateAccessToken = (payload: Record<string, string | boolean | number>) => {
   // Do not use this in production, the token will last 24 hours
@@ -24,6 +25,22 @@ export const withAuth = (req: Request, res: Response, next: () => any) => {
     next();
   });
 };
+
+export const withAuthSocket = (socket: Socket, next: any) => {
+  // Get token from socket auth. Data should have an auth attribute with a token attribute in it.
+  const token = socket.handshake.headers.token as string;
+
+  // Verify that auth header has the token
+  if(!token) next(new UnauthorizedException('MISSING_TOKEN'));
+
+  // Verify that the token is valid
+  jwt.verify(token, Constants.TOKEN_SECRET, (err, context) => {
+    if(err) next(new UnauthorizedException('INVALID_TOKEN'))
+    socket.data.context = context;
+    console.log(context);
+    next()
+  });
+}
 
 export const encryptPassword = (password: string) => {
   return bcrypt.hash(password, 10);

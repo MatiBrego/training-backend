@@ -16,7 +16,7 @@ export function chatController(io: Server){
         //Handle socket room joining requests
         socket.on("joinRoom", async (body) => {
             try {
-                //Validate request body
+                //Validate room request body
                 await SocketBodyValidation(body, RoomJoinRequestDto)
             }catch (validationError){
                 io.to(socket.id).emit("roomJoined", {status: 400, err: (validationError as ValidationException).error })
@@ -24,20 +24,21 @@ export function chatController(io: Server){
             }
 
             //Get room between logged user and the receiver, then return its id
-            const room = await service.joinRoom(socket, body.userId, body.receiverId);
+            const room = await service.joinRoom(socket, socket.data.context.userId, body.receiverId);
             io.to(room.id).emit("roomJoined", {status: 200, roomId: room.id, userId: body.userId})
 
             //Get previous messages from that room, and send them to the requester socket
             const prevMessages = await service.getPreviousMessages(room.id)
             for (const msg of prevMessages) {
-                io.to(socket.id).emit("onMessage", 'message: ' + msg.message)
+                //Chat user in message is named the same as user in chat user. Should be changed
+                io.to(socket.id).emit("onMessage", msg.user.user.username + ': ' + msg.message)
             }
         })
 
         //Handle message emission request to a room
         socket.on('emitMessage', async (body) => {
             try {
-                //Validate request body
+                //Validate message request body
                 await SocketBodyValidation(body, MessageRequestDto)
             }catch (validationError){
                 io.to(socket.id).emit("onMessage", {status: 400, err: (validationError as ValidationException).error })
@@ -48,7 +49,7 @@ export function chatController(io: Server){
             io.to(body.roomId).emit('onMessage', 'message: ' + body.message)
 
             //Save message to database
-            await service.saveMessage(body.userId, body.roomId, body.message)
+            await service.saveMessage(socket.data.context.userId, body.roomId, body.message)
         });
     });
 }

@@ -6,7 +6,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 
-import { Constants, NodeEnv, Logger } from '@utils';
+import {Constants, NodeEnv, Logger, withAuthSocket} from '@utils';
 import { router } from '@router';
 import { ErrorHandling } from '@utils/errors';
 
@@ -82,6 +82,9 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 })
+
+//Add middleware function to handle auth
+io.use(withAuthSocket)
 
 //Socket.IO controller
 chatController(io)

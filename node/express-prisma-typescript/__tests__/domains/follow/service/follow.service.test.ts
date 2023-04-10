@@ -70,4 +70,21 @@ describe("Test Follow Service", () => {
         // Try to unfollow user 2
         await expect(async () => await followService.UnfollowUser(user1.id, user2.id)).rejects.toThrow(new NotFoundException('Follower'))
     })
+
+    test("GivenTwoUsersThatFollowEachOther_WhenDeletingOneOfThem_ThenFollowRegistryShouldNotBeFoundInDb", async () => {
+        const user1 = users[0];
+        const user2 = users[1];
+
+        // Make users follow each other
+        await followService.FollowUser(user1.id, user2.id);
+        await followService.FollowUser(user2.id, user1.id);
+
+        // Delete user from db
+        await db.user.delete({where: {id: user1.id}})
+
+        // Find Follow registries where user 1 is follower or followed
+        const result = await db.follow.findMany({where: {OR: {followerId: user1.id, followedId: user1.id}}})
+
+        expect(result.length).toBe(0)
+    })
 })

@@ -1,5 +1,5 @@
 import {PostServiceImpl} from "../../../../src/domains/post/service";
-import {db, PrivateAccessException} from "../../../../src/utils";
+import {db, NotFoundException, PrivateAccessException} from "../../../../src/utils";
 import {PostRepositoryImpl} from "../../../../src/domains/post/repository";
 import {UserRepositoryImpl} from "../../../../src/domains/user/repository";
 import {FollowRepositoryImpl} from "../../../../src/domains/follow/repository/follow.repository.impl";
@@ -84,7 +84,7 @@ describe("Test Post Service", () => {
       }
    })
 
-   test("GivenOneUserWith10Posts_WhenBeforeIsSetToTheFirstPostAndLimitIs5_ThenGetPostsByAuthorShouldReturnJust5PostsStartingFromTheSecond", async () => {
+   test("GivenOneUserWith10Posts_WhenBeforeTheFirstPostAndLimitIs5_ThenGetPostsByAuthorShouldReturnJust5PostsStartingFromTheSecond", async () => {
       const user1 = users[0];
 
       const posts = await createPostsInDb(10, [user1.id])
@@ -103,6 +103,22 @@ describe("Test Post Service", () => {
       expect(result[0].id).toBe(posts[1].id)
    })
 
+   test("GivenAUser_WhenTryingToGetAPostWithAnIdThatDoesNotExist_ThenItShouldThrowANotFoundException", async () => {
+      const user1 = users[0];
+
+      await expect(async () => {
+         await postService.getPost(user1.id, "b24ef982-ba8d-4730-9c13-c3a803107bfc")
+      }).rejects.toThrow(new NotFoundException("post"))
+   });
+
+   test("GivenAUser_WhenTryingToGetAPostWithAnIdThatDoesNotMatchUUIDFormat_ThenItShouldThrowANotFoundException", async () => {
+      const user1 = users[0];
+
+      await expect(async () => {
+         await postService.getPost(user1.id, "Hello")
+      }).rejects.toThrow(new NotFoundException("post"))
+   })
+
    test("GivenAPrivateUserWithPostsAndAnotherUser_WhenTheSecondUserDoesNotFollowTheFirst_ThenGetPostFromUser2ShouldThrowError", async () => {
       const user1 = users[0];
       const user2 = users[1];
@@ -115,6 +131,28 @@ describe("Test Post Service", () => {
       await expect(async () => {
          await postService.getPost(user2.id, posts[0].id)}).rejects.toThrow(new PrivateAccessException())
    });
+
+   test("GivenAUser_WhenTryingToGetPostsOfAnAuthorIdThatDoesNotExist_ThenGetPostByAuthorShouldThrowNotFoundException", async () => {
+      const user1 = users[0];
+
+      // Set before post to the first one, and limit to 5
+      const paginationArgs = {before: "", limit: 5}
+
+      await expect(async () => {
+         await postService.getPostsByAuthor(user1.id, "b24ef982-ba8d-4730-9c13-c3a803107bfc", paginationArgs)
+      }).rejects.toThrow(new NotFoundException("user"))
+   })
+
+   test("GivenAUser_WhenTryingToGetPostsOfAnAuthorIdThatIsNotValid_ThenGetPostByAuthorShouldThrowNotFoundException", async () => {
+      const user1 = users[0];
+
+      // Set before post to the first one, and limit to 5
+      const paginationArgs = {before: "", limit: 5}
+
+      await expect(async () => {
+         await postService.getPostsByAuthor(user1.id, "Hello", paginationArgs)
+      }).rejects.toThrow(new NotFoundException("user"))
+   })
 
    test("GivenAPrivateUserWithPostsAndAnotherUser_WhenTheSecondUserDoesNotFollowTheFirst_ThenGetPostByAuthorFromUser2ShouldThrowError", async () => {
       const user1 = users[0];

@@ -16,7 +16,15 @@ beforeAll(async () => {
 describe("Test user service", () => {
     const userService = new UserServiceImpl(new UserRepositoryImpl(db))
 
-    test("updatePrivacy", async () => {
+    test("GivenAUser_WhenCheckingRightAfterCreatingIt_ThenUserShouldBePrivateInTheDB", async () => {
+        const user1 = users[0]
+
+        //Check if user created is public
+        let userInDb = await db.user.findUnique({where: {id: user1.id}})
+        expect(userInDb?.isPrivate).toBe(false)
+    })
+
+    test("GivenAPublicUser_WhenCallingMakeUserPrivate_ThenUserShouldBePrivateInTheDB", async () => {
         const user1 = users[0]
 
         //Check if user created is public
@@ -30,6 +38,4 @@ describe("Test user service", () => {
         userInDb = await db.user.findUnique({where: {id: user1.id}})
         expect(userInDb?.isPrivate).toBe(true)
     })
-
-
 })

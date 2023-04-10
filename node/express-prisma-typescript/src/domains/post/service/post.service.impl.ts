@@ -1,7 +1,7 @@
 import { CreatePostInputDTO, PostDTO } from '../dto';
 import { PostRepository } from '../repository';
 import { PostService } from '.';
-import { validate } from 'class-validator';
+import {isUUID, validate} from 'class-validator';
 import {ForbiddenException, NotFoundException, PrivateAccessException} from "../../../utils";
 import { CursorPagination } from '@types';
 import {UserRepository} from "@domains/user/repository";
@@ -25,6 +25,8 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost(userId: string, postId: string): Promise<PostDTO> {
+    if(!isUUID(postId)) throw new NotFoundException("post") // Check if postId passed is a valid uuid
+
     const post = await this.repository.getById(postId);
     if (!post) throw new NotFoundException('post');
 
@@ -42,9 +44,12 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPostsByAuthor(userId: any, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
-    const author = await this.userRepository.getById(authorId);
+    if(!isUUID(authorId)) throw new NotFoundException("user") //Check if authorId is a valid uuid
 
-    if(author?.isPrivate) {
+    const author = await this.userRepository.getById(authorId);
+    if(author === null) throw new NotFoundException("user")
+
+    if(author.isPrivate) {
       const follow = await this.followRepository.getByUsersId(userId, author.id)
       if (!follow) throw new PrivateAccessException();
     }

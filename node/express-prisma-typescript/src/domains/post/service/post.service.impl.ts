@@ -2,7 +2,7 @@ import { CreatePostInputDTO, PostDTO } from '../dto';
 import { PostRepository } from '../repository';
 import { PostService } from '.';
 import { validate } from 'class-validator';
-import {ForbiddenException, NotFoundException, PrivateAccessException} from '@utils';
+import {ForbiddenException, NotFoundException, PrivateAccessException} from "../../../utils";
 import { CursorPagination } from '@types';
 import {UserRepository} from "@domains/user/repository";
 import {FollowRepository} from "@domains/follow/repository/follow.repository";

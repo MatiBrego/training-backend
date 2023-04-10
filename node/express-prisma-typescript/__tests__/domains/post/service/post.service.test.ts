@@ -1,11 +1,12 @@
 import {PostServiceImpl} from "../../../../src/domains/post/service";
-import {db} from "../../../../src/utils";
+import {db, PrivateAccessException} from "../../../../src/utils";
 import {PostRepositoryImpl} from "../../../../src/domains/post/repository";
 import {UserRepositoryImpl} from "../../../../src/domains/user/repository";
 import {FollowRepositoryImpl} from "../../../../src/domains/follow/repository/follow.repository.impl";
 import {createPostsInDb, createUsersInDb, sortPosts} from "../../../../src/testPreparation";
+import {UserDTO} from "../../../../src/domains/user/dto";
 
-let users: {username: string, email: string, password: string, id: string}[] = [];
+let users: UserDTO[] = [];
 
 beforeEach(async () => {
    // Delete all users
@@ -101,4 +102,33 @@ describe("Test Post Service", () => {
 
       expect(result[0].id).toBe(posts[1].id)
    })
+
+   test("GivenAPrivateUserWithPostsAndAnotherUser_WhenTheSecondUserDoesNotFollowTheFirst_ThenGetPostFromUser2ShouldThrowError", async () => {
+      const user1 = users[0];
+      const user2 = users[1];
+
+      const posts = await createPostsInDb(2, [user1.id])
+
+      // Make user2 private
+      await db.user.update({where: {id: user1.id},data: {isPrivate: true}})
+
+      await expect(async () => {
+         await postService.getPost(user2.id, posts[0].id)}).rejects.toThrow(new PrivateAccessException())
+   });
+
+   test("GivenAPrivateUserWithPostsAndAnotherUser_WhenTheSecondUserDoesNotFollowTheFirst_ThenGetPostByAuthorFromUser2ShouldThrowError", async () => {
+      const user1 = users[0];
+      const user2 = users[1];
+
+      const posts = await createPostsInDb(2, [user1.id])
+
+      // Set before post to the first one, and limit to 5
+      const paginationArgs = {before: posts[0].id, limit: 5}
+
+      // Make user2 private
+      await db.user.update({where: {id: user1.id},data: {isPrivate: true}})
+
+      await expect(async () => {
+         await postService.getPostsByAuthor(user2.id, user1.id, paginationArgs)}).rejects.toThrow(new PrivateAccessException())
+   });
 });

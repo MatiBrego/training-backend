@@ -1,4 +1,5 @@
 import {db} from "./utils";
+import {PostDTO} from "@domains/post/dto";
 
 /**
  * Creates users and adds them to the db.
@@ -45,4 +46,16 @@ export async function createPostsInDb(postQtyByUser: number, userIds: string[]){
         }
     }
     return posts;
+}
+
+/**
+ * Sort posts by date in ascending order
+ * @param posts Array of posts DTO
+ * */
+export function sortPosts(posts: PostDTO[]){
+    posts.sort((a, b) => {
+        if(a.createdAt > b.createdAt) return 1;
+        else if(a.createdAt < b.createdAt) return -1;
+        else return 0;
+    })
 }

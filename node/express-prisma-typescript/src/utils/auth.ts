@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { Constants } from '@utils';
+import {Constants} from '@utils'
 import { UnauthorizedException } from '@utils/errors';
 import {Socket} from "socket.io";
 
@@ -37,7 +37,6 @@ export const withAuthSocket = (socket: Socket, next: any) => {
   jwt.verify(token, Constants.TOKEN_SECRET, (err, context) => {
     if(err) next(new UnauthorizedException('INVALID_TOKEN'))
     socket.data.context = context;
-    console.log(context);
     next()
   });
 }

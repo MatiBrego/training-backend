@@ -14,7 +14,6 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async getById(userId: string): Promise<UserDTO | null> {
-    console.log('Get by Id')
     const user = await this.db.user.findUnique({
       where: {
         id: userId,

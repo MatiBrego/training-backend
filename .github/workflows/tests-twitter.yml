@@ -30,9 +30,9 @@ jobs:
           echo export POSTGRES_DB=app >> .env
           echo export POSTGRES_USER=postgres >> .env
           echo export POSTGRES_PASSWORD=password >> .env
-          echo export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
+          echo export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}" >> .env
           echo DB_DOCKER_SERVICE="db"
-          echo export DOCKER_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_DOCKER_SERVICE}/${POSTGRES_DB}?connect_timeout=600"
+          echo export DOCKER_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_DOCKER_SERVICE}/${POSTGRES_DB}?connect_timeout=600" >> .env
           cat .env
           
       - name: Docker Compose

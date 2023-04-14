@@ -9,14 +9,7 @@ jobs:
     defaults: 
       run:
         working-directory: node/express-prisma-typescript
-        
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
-      DB_DOCKER_SERVICE: "db"
-      DOCKER_DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_DOCKER_SERVICE}/${POSTGRES_DB}?connect_timeout=600"
-      
+  
     steps: 
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,8 +32,7 @@ jobs:
           echo export POSTGRES_USER=postgres >> .env
           echo export POSTGRES_PASSWORD=password >> .env
           echo export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
-          echo DB_DOCKER_SERVICE="db"
-          echo export DOCKER_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_DOCKER_SERVICE}/${POSTGRES_DB}?connect_timeout=600"
+          echo export DOCKER_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@$db/${POSTGRES_DB}?connect_timeout=600"
           cat .env
           
       - name: Docker Compose

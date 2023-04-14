@@ -36,7 +36,7 @@ jobs:
           cat .env
           
       - name: Docker Compose
-        run: docker compose up
+        run: docker compose --env-file .env up
         
       - run: npm install
       - run: npm run test

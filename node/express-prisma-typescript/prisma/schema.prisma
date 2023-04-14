@@ -24,6 +24,8 @@ model User {
   email    String  @unique // Unique constraint
   password String
 
+  isPrivate Boolean @default(false)
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
@@ -31,6 +33,11 @@ model User {
   posts     Post[]
   follows   Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
+  likes     Lks[]   @relation(name: "likes")
+  retweets  Retweet[] @relation(name: "retweets")
+
+  chatUsers ChatUser[] @relation(name: "chatUsers")
+
 }
 
 model Follow {
@@ -53,10 +60,69 @@ model Post {
   authorId String   @db.Uuid // Foreign Key
   content  String   @db.VarChar(240) // Limit the content to 240 characters
   images   String[]
+  parentPostId String? @db.Uuid
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
+  likes Lks[] @relation(name: "likes")
+  retweets Retweet[] @relation(name: "retweets")
+
+  comments Post[] @relation(name: "comments")
+  parentPost Post? @relation(name: "comments", fields: [parentPostId], references: [id], onDelete: Cascade) //One to many
+
+}
+
+model Lks{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+    likerId String @db.Uuid
+    postId  String @db.Uuid
+
+    liker User @relation(name: "likes", fields: [likerId], references: [id], onDelete: Cascade) //One to many
+    post Post @relation(name: "likes", fields: [postId], references: [id], onDelete: Cascade) //One to many
+}
+
+model Retweet{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+    retweeterId String @db.Uuid
+    postId  String @db.Uuid
+
+    retweeter User @relation(name: "retweets", fields: [retweeterId], references: [id], onDelete: Cascade) //One to many
+    post Post @relation(name: "retweets", fields: [postId], references: [id], onDelete: Cascade) //One to many
+}
+
+model ChatRoom{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    name String?
+
+    users ChatUser[] @relation(name: "users")
+    messages ChatMessage[] @relation(name: "messages")
+}
+
+model ChatUser{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    userId String @db.Uuid
+    chatRoomId String @db.Uuid
+
+    user User @relation(name: "chatUsers", fields: [userId], references: [id], onDelete: Cascade)
+    chatRoom ChatRoom @relation(name: "users", fields: [chatRoomId], references: [id], onDelete: Cascade)
+    messages ChatMessage[] @relation(name: "messages")
+}
+
+model ChatMessage{
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    message String
+    userId String @db.Uuid
+    chatRoomId String @db.Uuid
+
+    user ChatUser @relation(name: "messages", fields: [userId], references: [id], onDelete: Cascade)
+    chatRoom ChatRoom @relation(name: "messages", fields: [chatRoomId], references: [id], onDelete: Cascade)
 }

@@ -19,6 +19,7 @@ export class PostDTO {
     this.content = post.content;
     this.images = post.images;
     this.createdAt = post.createdAt;
+    this.comments = post.comments
   }
 
   id: string;
@@ -26,4 +27,5 @@ export class PostDTO {
   content: string;
   images: string[];
   createdAt: Date;
+  comments?: PostDTO[];
 }

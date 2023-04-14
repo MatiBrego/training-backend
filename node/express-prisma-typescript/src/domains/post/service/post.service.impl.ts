@@ -1,12 +1,16 @@
 import { CreatePostInputDTO, PostDTO } from '../dto';
 import { PostRepository } from '../repository';
 import { PostService } from '.';
-import { validate } from 'class-validator';
-import { ForbiddenException, NotFoundException } from '@utils';
+import {isUUID, validate} from 'class-validator';
+import {ForbiddenException, NotFoundException, PrivateAccessException} from "../../../utils";
 import { CursorPagination } from '@types';
+import {UserRepository} from "@domains/user/repository";
+import {FollowRepository} from "@domains/follow/repository/follow.repository";
 
 export class PostServiceImpl implements PostService {
-  constructor(private readonly repository: PostRepository) {}
+  constructor(private readonly repository: PostRepository,
+              private readonly userRepository: UserRepository,
+              private readonly followRepository: FollowRepository) {}
 
   createPost(userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     validate(data);
@@ -21,19 +25,43 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost(userId: string, postId: string): Promise<PostDTO> {
-    // TODO: validate that the author has public profile or the user follows the author
+    if(!isUUID(postId)) throw new NotFoundException("post") // Check if postId passed is a valid uuid
+
     const post = await this.repository.getById(postId);
     if (!post) throw new NotFoundException('post');
+
+    const author = await this.userRepository.getById(post.authorId);
+    if(author?.isPrivate) {
+      const follow = await this.followRepository.getByUsersId(userId, author.id)
+      if (!follow) throw new PrivateAccessException();
+    }
+
     return post;
   }
 
   getLatestPosts(userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    // TODO: filter post search to return posts from authors that the user follows
-    return this.repository.getAllByDatePaginated(options);
+    return this.repository.getAllByDatePaginatedPublicOrFollowed(userId, options);
   }
 
-  getPostsByAuthor(userId: any, authorId: string): Promise<PostDTO[]> {
-    // TODO: throw exception when the author has a private profile and the user doesn't follow them
-    return this.repository.getByAuthorId(authorId);
+  async getPostsByAuthor(userId: any, authorId: string, options: CursorPagination): Promise<PostDTO[]> {
+    if(!isUUID(authorId)) throw new NotFoundException("user") //Check if authorId is a valid uuid
+
+    const author = await this.userRepository.getById(authorId);
+    if(author === null) throw new NotFoundException("user")
+
+    if(author.isPrivate) {
+      const follow = await this.followRepository.getByUsersId(userId, author.id)
+      if (!follow) throw new PrivateAccessException();
+    }
+
+    return this.repository.getByAuthorId(authorId, options);
+  }
+
+  async commentPost(userId: string, postId: string, body: CreatePostInputDTO): Promise<PostDTO>{
+    return await this.repository.createComment(userId, postId, body);
+  }
+
+  async getCommentsByUser(userId: string){
+    return await this.repository.getCommentsByUserId(userId);
   }
 }

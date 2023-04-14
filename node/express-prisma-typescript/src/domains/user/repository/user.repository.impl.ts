@@ -13,7 +13,7 @@ export class UserRepositoryImpl implements UserRepository {
     }).then(user => new UserDTO(user));
   }
 
-  async getById(userId: any): Promise<UserDTO | null> {
+  async getById(userId: string): Promise<UserDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
         id: userId,
@@ -57,5 +57,14 @@ export class UserRepositoryImpl implements UserRepository {
       },
     });
     return user ? new ExtendedUserDTO(user) : null;
+  }
+
+  async updatePrivacy(userId: string, isPrivate: boolean): Promise<UserDTO> {
+    const user = await this.db.user.update({
+      where : {id: userId},
+      data: {isPrivate: isPrivate}
+      }
+    )
+    return new UserDTO(user);
   }
 }

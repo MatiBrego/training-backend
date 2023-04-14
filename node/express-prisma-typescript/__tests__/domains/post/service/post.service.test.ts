@@ -6,24 +6,24 @@ import {FollowRepositoryImpl} from "../../../../src/domains/follow/repository/fo
 import {createPostsInDb, createUsersInDb, sortPosts} from "../../../../src/testPreparation";
 import {UserDTO} from "../../../../src/domains/user/dto";
 
-let users: UserDTO[] = [];
-
-beforeEach(async () => {
-   // Delete all users
-   await db.user.deleteMany({})
-   // Delete all posts
-   await db.post.deleteMany({})
-
-   users = await createUsersInDb(4);
-});
-
 describe("Test Post Service", () => {
    const postService = new PostServiceImpl(
        new PostRepositoryImpl(db),
        new UserRepositoryImpl(db),
        new FollowRepositoryImpl(db))
 
-   test("GivenFourUsersEachWithAPost_WhenJustCreated_ThenGetLatestPostShouldNotGetPrivateUserPost", async () => {
+   let users: UserDTO[] = [];
+
+   beforeEach(async () => {
+      // Delete all users
+      await db.user.deleteMany({})
+      // Delete all posts
+      await db.post.deleteMany({})
+
+      users = await createUsersInDb(4);
+   });
+
+   test("GivenFourUsersEachWithAPost_WhenJustCreated_ThenGetLatestPostShouldGetAllPosts", async () => {
       const user1 = users[0];
       const posts = await createPostsInDb(1, users.map((user) => user.id));
 
@@ -32,7 +32,15 @@ describe("Test Post Service", () => {
 
       // Get all posts
       let result = await postService.getLatestPosts(user1.id, paginationArgs)
+
+      // Sort result and slice posts from the first one
+      sortPosts(result);
+
+      const postsSliced = posts.slice(1);
+
       expect(result.length).toBe(3)
+      // Map each post to its id and compare result and posts
+      expect(result.map((post) => post.id)).toEqual(postsSliced.map((post) => post.id))
    })
 
    test("GivenFourUsersEachWithAPost_WhenOneUserGoesPrivate_ThenGetLatestPostShouldNotGetPrivateUserPost", async () =>{
@@ -78,10 +86,13 @@ describe("Test Post Service", () => {
       // Sort result to match posts order
       sortPosts(result)
 
-      // Expect result to have all posts, except from the first due to pagination
-      for (let i = 0; i < result.length; i++) {
-         expect(result[i].id).toBe(posts[i+1].id)
-      }
+      // Sort result and slice posts from the first one
+      sortPosts(result);
+
+      const postsSliced = posts.slice(1);
+
+      // Map each post to its id and compare result and posts
+      expect(result.map((post) => post.id)).toEqual(postsSliced.map((post) => post.id))
    })
 
    test("GivenOneUserWith10Posts_WhenBeforeTheFirstPostAndLimitIs5_ThenGetPostsByAuthorShouldReturnJust5PostsStartingFromTheSecond", async () => {
@@ -97,10 +108,13 @@ describe("Test Post Service", () => {
       // Expect result to have 5 posts
       expect(result.length).toBe(5)
 
-      // Sort result to match posts order
-      sortPosts(result)
+      // Sort result and slice posts from the first one
+      sortPosts(result);
 
-      expect(result[0].id).toBe(posts[1].id)
+      const postsSliced = posts.slice(1, 6);
+
+      // Map each post to its id and compare result and posts
+      expect(result.map((post) => post.id)).toEqual(postsSliced.map((post) => post.id))
    })
 
    test("GivenAUser_WhenTryingToGetAPostWithAnIdThatDoesNotExist_ThenItShouldThrowANotFoundException", async () => {

@@ -3,18 +3,18 @@ import {FollowRepositoryImpl} from "../../../../src/domains/follow/repository/fo
 import {db, NotFoundException} from "../../../../src/utils";
 import {createUsersInDb} from "../../../../src/testPreparation";
 
-let users: {username: string, email: string, password: string, id: string}[] = [];
-
-beforeEach(async () => {
-    //Delete all users
-    await db.user.deleteMany({})
-
-    users = await createUsersInDb(2);
-});
-
 
 describe("Test Follow Service", () => {
     const followService = new FollowServiceImpl(new FollowRepositoryImpl(db))
+
+    let users: {username: string, email: string, password: string, id: string}[] = [];
+
+    beforeEach(async () => {
+        //Delete all users
+        await db.user.deleteMany({})
+
+        users = await createUsersInDb(2);
+    });
 
     test("GivenTwoUsers_WhenFollowUserIsCalled_ThenANewFollowShouldBeRegisterInTheDatabase", async () => {
         const user1 = users[0];

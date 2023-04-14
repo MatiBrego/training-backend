@@ -1,0 +1,34 @@
+name: Jest Tests for Twitter Clone
+
+
+on: [push]
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: node/express-prisma-typescript
+  
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.5.2
+        with: 
+          node-version: 18
+          
+      - name: Yarn Setup
+        uses: DerYeger/yarn-setup-action@v1.0.1
+        with:
+          # The version of Node.js that will be used
+          node-version: 18
+          
+      - name: Docker Compose
+        run: docker compose --env-file .env up
+        
+      - run: npm install
+      - run: npm run test
+      
+

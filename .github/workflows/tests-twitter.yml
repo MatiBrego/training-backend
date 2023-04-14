@@ -21,5 +21,6 @@ jobs:
           # The version of Node.js that will be used
           node-version: 18
         
+      - run: npm install
       - run: npm run test
 

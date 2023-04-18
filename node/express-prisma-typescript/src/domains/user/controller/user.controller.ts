@@ -87,3 +87,21 @@ userRouter.post("/public", async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).send();
 });
+
+userRouter.post("/pic", async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  const picUrl = await service.addProfilePic(userId)
+
+  return res.status(HttpStatus.OK).send({url: picUrl})
+})
+
+userRouter.get("/pic/get", async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  console.log("hello")
+
+  const picUrl = await service.getProfilePic(userId)
+
+  return res.status(HttpStatus.OK).send({url: picUrl})
+})

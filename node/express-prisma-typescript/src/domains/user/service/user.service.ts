@@ -5,6 +5,8 @@ export interface UserService {
   deleteUser(userId: any): Promise<void>;
   getUser(userId: any): Promise<UserDTO>;
   getUserRecommendations(userId: any, options: OffsetPagination): Promise<UserDTO[]>;
-  makeUserPrivate(userId: string): Promise<UserDTO>
-  makeUserPublic(userId: string): Promise<UserDTO>
+  makeUserPrivate(userId: string): Promise<UserDTO>;
+  makeUserPublic(userId: string): Promise<UserDTO>;
+  addProfilePic(userId: string): Promise<string>;
+  getProfilePic(userId: string): Promise<string>;
 }

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@prisma/client": "^4.9.0",
+    "aws-sdk": "^2.1359.0",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -68,7 +69,9 @@
       "pre-commit": "eslint --fix && pretty-quick --staged"
     }
   },
-  "exclude": ["__tests__"],
+  "exclude": [
+    "__tests__"
+  ],
   "ts-node": {
     "transpileOnly": true,
     "files": true

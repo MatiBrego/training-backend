@@ -24,7 +24,7 @@ const service: PostService = new PostServiceImpl(
  * /api/post:
  *   get:
  *     summary: Returns posts in feed
- *     description: Returns posts in feed, paginated
+ *     description: Returns posts in feed (paginated). If any post author is private, their posts will be returned only if logged user follows this author
  *     parameters:
  *      - in: query
  *        name: limit
@@ -58,17 +58,16 @@ postRouter.get('/', async (req: Request, res: Response) => {
  * /api/post/{postId}:
  *   get:
  *     summary: Returns a post by id
- *     description: Returns a post by id
+ *     description: Returns a post by id. If the post author is private, the post will be returned only if logged user follows the author
  *     responses:
  *      404:
- *        description: Not Found
+ *        description: Post Not Found
  *     parameters:
  *     - in: path
  *       name: postId
  *       required: true
  *       schema:
  *        type: integer
- *
  */
 postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
@@ -79,6 +78,39 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(post);
 });
 
+/**
+ * @swagger
+ * /api/post/by_user/{userId}:
+ *   get:
+ *     summary: Returns posts made by a user
+ *     description: Given a user id, returns posts (paginated) by the user with that Id. If requested post author is private, their posts will be returned only if logged user follows this author
+ *     responses:
+ *      404:
+ *        description: User Not Found
+ *     parameters:
+ *      - in: path
+ *        name: UserId
+ *        required: true
+ *        schema:
+ *        type: string
+ *      - in: query
+ *        name: limit
+ *        required: true
+ *        schema:
+ *          type: integer
+ *        description: The amount of records to return
+ *      - in: query
+ *        name: before
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: The id of the record after the last returned record
+ *      - in: query
+ *        name: after
+ *        schema:
+ *          type: string
+ *        description: The id of the record before the first returned record
+ */
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
   const { userId: authorId } = req.params;
@@ -110,7 +142,6 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
  *                type: string
  *                description: Images to add
  *                example: picture.jpg
- *
  */
 postRouter.post('/', BodyValidation(CreatePostInputDTO) ,async (req: Request, res: Response) => {
   const { userId } = res.locals.context;

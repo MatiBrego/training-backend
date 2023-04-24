@@ -26,7 +26,10 @@ jobs:
           node-version: 18
           
       - name: Docker Compose
-        run: docker compose --env-file .env up
+        run: docker compose --env-file .env up db -d
+        
+      - run: npx prisma migrate dev
+      - run: npx prisma generate
         
       - run: npm install
       - run: npm run test

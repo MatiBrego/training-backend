@@ -21,14 +21,14 @@ const service: FollowService = new FollowServiceImpl(new FollowRepositoryImpl(db
  *       schema:
  *        type: string
  */
-followRouter.post('follow/:user_id', async (req: Request, res: Response) => {
+followRouter.post('/follow/:user_id', async (req: Request, res: Response) => {
     const { userId } = res.locals.context;
 
     const { user_id } = req.params;
 
-    await service.FollowUser(userId, user_id);
+    const follow = await service.FollowUser(userId, user_id);
 
-    return res.status(HttpStatus.OK).send();
+    return res.status(HttpStatus.OK).json(follow);
 })
 
 /**
@@ -44,7 +44,7 @@ followRouter.post('follow/:user_id', async (req: Request, res: Response) => {
  *       schema:
  *        type: string
  */
-followRouter.post('/:user_id', async (req: Request, res: Response) => {
+followRouter.post('/unfollow/:user_id', async (req: Request, res: Response) => {
     const { userId } = res.locals.context; //Follower
 
     const { user_id } = req.params; //Followed

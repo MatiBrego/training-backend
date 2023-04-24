@@ -1,6 +1,7 @@
 import {PrismaClient} from "@prisma/client";
 import {RoomDto} from "@domains/chat/dto";
 
+
 export class ChatRepository{
     constructor(private readonly db: PrismaClient) {}
 
@@ -46,9 +47,12 @@ export class ChatRepository{
         const chatUser = await this.db.chatUser.findFirst({
             where: {
                 userId: userId
+            },
+            select: {
+                user: true,
+                id: true
             }
         })
-
         if(chatUser) {
             await this.db.chatMessage.create({
                 data: {
@@ -58,6 +62,7 @@ export class ChatRepository{
                 }
             })
         }
+        return chatUser
     }
 
     async getMessagesByRoomId(roomId: string){

@@ -58,7 +58,7 @@ postRouter.get('/', async (req: Request, res: Response) => {
  * /api/post/{postId}:
  *   get:
  *     summary: Returns a post by id
- *     description: Returns a post by id. If the post author is private, the post will be returned only if logged user follows the author
+ *     description: Returns a post by id with 10 of its most reacted comments. If the post author is private, the post will be returned only if logged user follows the author.
  *     responses:
  *      404:
  *        description: Post Not Found
@@ -67,7 +67,7 @@ postRouter.get('/', async (req: Request, res: Response) => {
  *       name: postId
  *       required: true
  *       schema:
- *        type: integer
+ *        type: string
  */
 postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
@@ -161,6 +161,34 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK);
 });
 
+/**
+ * @swagger
+ * /api/post/comment/{postId}:
+ *  post:
+ *    summary: Create a comment in a post.
+ *    parameters:
+ *      - in: path
+ *        name: PostId
+ *        required: true
+ *        schema:
+ *        type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              content:
+ *                type: string
+ *                description: Content for post.
+ *                example: Hello World!
+ *                required: true
+ *              images:
+ *                type: string
+ *                description: Images to add
+ *                example: picture.jpg
+ */
 postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context;
   const { postId } = req.params;
@@ -171,6 +199,19 @@ postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (r
   return res.status(HttpStatus.OK).json(comment)
 })
 
+/**
+ * @swagger
+ * /api/post/comment/{userId}:
+ *   get:
+ *     summary: Returns all comments by a user
+ *     description: Given a user id, return all comments from that user.
+ *     parameters:
+ *     - in: path
+ *       name: UserId
+ *       required: true
+ *       schema:
+ *        type: string
+ */
 postRouter.get('/comment/:userId', async (req, res) => {
   const {userId} = req.params;
 

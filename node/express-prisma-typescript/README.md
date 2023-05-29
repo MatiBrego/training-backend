@@ -147,3 +147,5 @@ Fork this repository and complete the tasks. Then create a PR and start with you
 - [ ] Users do not currently have a profile picture. Integrate with AWS S3 to store user profile pictures. Careful! Do not receive images in your endpoints. Make use of S3 Pre-signed URLs. Update the UserDTO to include the profile image. You can use a public S3 bucket as it doesn't contain private data.
 - [ ] Using [SocketIO](https://socket.io/) create an authenticated websocket to create a real-time chat between users only if they follow eachother. Also messages should be stored in the database to keep the chat history.
 - [ ] Search for a testing framework and create some unit tests. Make a CI/CD pipeline using gitlab actions to run those tests.
+
+Demo

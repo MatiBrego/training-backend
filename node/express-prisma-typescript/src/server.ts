@@ -53,6 +53,8 @@ const options = {
         "./src/domains/follow/controller/*.ts",
         "./src/domains/health/controller/*.ts",
         "./src/domains/post/controller/*.ts",
+        "./src/domains/reaction/like/controller/*.ts",
+        "./src/domains/reaction/retweet/controller/*.ts"
     ],
 };
 
@@ -78,7 +80,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
         methods: ["GET", "POST"]
     }
 })

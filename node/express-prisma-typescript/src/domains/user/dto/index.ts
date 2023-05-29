@@ -20,9 +20,11 @@ export class ExtendedUserDTO extends UserDTO {
     this.email = user.email;
     this.name = user.name;
     this.password = user.password;
+    this.profile = user.profile
   }
 
   email!: string;
   username!: string;
   password!: string;
+  profile?: string
 }

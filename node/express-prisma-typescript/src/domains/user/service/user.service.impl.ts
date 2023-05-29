@@ -3,6 +3,7 @@ import { OffsetPagination } from 'types';
 import { UserDTO } from '../dto';
 import { UserRepository } from '../repository';
 import { UserService } from './user.service';
+import {generateDownloadUrl, generateUploadURL} from "@utils/aws";
 
 export class UserServiceImpl implements UserService {
   constructor(private readonly repository: UserRepository) {}
@@ -28,5 +29,19 @@ export class UserServiceImpl implements UserService {
 
   makeUserPublic(userId: string): Promise<UserDTO> {
     return this.repository.updatePrivacy(userId, false);
+  }
+
+  async addProfilePic(userId: string): Promise<string>{
+    await this.repository.updateProfilePic(userId)
+
+    return await generateUploadURL(userId)
+  }
+
+  async getProfilePic(userId: string): Promise<string>{
+    const key = await this.repository.getProfilePic(userId)
+
+    if(!key) throw new NotFoundException("user");
+
+    return await generateDownloadUrl(key)
   }
 }

@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import {LikeDto} from "@domains/reaction/like/dto";
 
 export class CreatePostInputDTO {
   @IsString()
@@ -20,6 +21,7 @@ export class PostDTO {
     this.images = post.images;
     this.createdAt = post.createdAt;
     this.comments = post.comments
+    this.likes = post.likes
   }
 
   id: string;
@@ -28,4 +30,5 @@ export class PostDTO {
   images: string[];
   createdAt: Date;
   comments?: PostDTO[];
+  likes?: LikeDto[]
 }

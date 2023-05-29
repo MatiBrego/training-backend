@@ -30,7 +30,7 @@ export function chatController(io: Server){
             //Get previous messages from that room, and send them to the requester socket
             const prevMessages = await service.getPreviousMessages(room.id)
             for (const msg of prevMessages) {
-                //Chat user in message is named the same as user in chat user. Should be changed
+                //Chat user in message is named the same as user in chat user.
                 io.to(socket.id).emit("onMessage", msg.user.user.username + ': ' + msg.message)
             }
         })
@@ -45,11 +45,15 @@ export function chatController(io: Server){
                 return
             }
 
-            //Emit message to the room
-            io.to(body.roomId).emit('onMessage', 'message: ' + body.message)
+            //Save message to database and get user
+            const user = await service.saveMessage(socket.data.context.userId, body.roomId, body.message)
 
-            //Save message to database
-            await service.saveMessage(socket.data.context.userId, body.roomId, body.message)
+            const username = user? user.user.username:null
+
+            //Emit message to the room
+            io.to(body.roomId).emit('onMessage', username + ': ' + body.message)
+
+
         });
     });
 }

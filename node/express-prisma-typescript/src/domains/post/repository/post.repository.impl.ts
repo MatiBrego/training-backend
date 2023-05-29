@@ -79,35 +79,28 @@ export class PostRepositoryImpl implements PostRepository {
   }
 
   async getById(postId: string): Promise<PostDTO | null> {
-    const post = await this.db.post.findFirst({
+    const post = await this.db.post.findUnique({
       where: {
         id: postId,
       },
       include: {
         comments: {
           take: 10,
-          orderBy: [
-              {
-                retweets: {_count: 'desc'},
-                // likes: {_count: 'desc'}
-              },
-          ],
           select: {
             id: true,
             authorId: true,
             content: true,
             images: true,
             createdAt: true,
-            _count:{
-              select:{
-                retweets: true,
-                // likes: true
-              }
-            }
+            _count: {select: {retweets: true}}
           },
-        }
+          orderBy:{
+            retweets: {_count: 'desc'}
+          }
+        },
       }
     });
+
     return post ? new PostDTO(post) : null;
   }
 

@@ -19,7 +19,7 @@ export class ChatService{
     }
 
     async saveMessage(userId: string, roomId: string, message: string){
-        await this.repository.createMessage(userId, roomId, message);
+        return await this.repository.createMessage(userId, roomId, message);
     }
 
     async getPreviousMessages(roomId: string){
